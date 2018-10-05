@@ -1,4 +1,4 @@
-# getterfn
+# Vuex Indexed Getters
 
 ## Project setup
 ```
@@ -29,3 +29,7 @@ npm run lint
 ```
 npm run test:unit
 ```
+
+# Special Thanks
+
+This demo was created using @vue/cli version 3 (`npm install -g @vue/cli`). If you work with Vue, the vue cli is an amazing resource for quickly setting up projects.

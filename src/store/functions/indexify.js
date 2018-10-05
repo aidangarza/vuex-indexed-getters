@@ -9,15 +9,15 @@ export const keyBy = (list, prop) => {
   ), {})
 }
 
-const doKeyBy = (prop) => (map, item, i) => ({
-  ...map,
-  [item[prop]]: i
-})
+const doKeyBy = (prop) => (map, item, i) => {
+  map[item[prop]] = i
+  return map
+}
 
-const doDynamicKeyBy = (prop) => (map, item, i) => ({
-  ...map,
-  [prop(item)]: i
-})
+const doDynamicKeyBy = (prop) => (map, item, i) => {
+  map[prop(item)] = i
+  return map
+}
 
 // ------------------------------------------------------------- | AMG
 // Group By
@@ -30,17 +30,17 @@ export const groupBy = (list, prop) => {
   ), {})
 }
 
-const doGroupBy = (prop) => (map, item, i) => ({
-  ...map,
-  [item[prop]]: [...(map[item[prop]] || []), i]
-})
+const doGroupBy = (prop) => (map, item, i) => {
+  map[item[prop]] = map[item[prop]] || []
+  map[item[prop]].push(i)
+  return map
+}
 
 const doDynamicGroupBy = (prop) => (map, item, i) => {
   const key = prop(item)
-  return {
-    ...map,
-    [key]: [...(map[key] || []), i]
-  }
+  map[key] = map[key] || []
+  map[key].push(i)
+  return map
 }
 
 // ------------------------------------------------------------- | AMG
@@ -54,21 +54,31 @@ export const tagBy = (list, prop) => {
   ), {})
 }
 
-const doDynamicTagBy = (prop) => (map, item, i) => ({
-  ...map,
-  ...prop(item).reduce((tmap, tag) => ({
-    ...tmap,
-    [tag]: [...(map[tag] || []), i]
-  }), {})
-})
+const doDynamicTagBy = (prop) => (map, item, i) => {
+  let dedupe = {}
+  const tags = prop(item)
+  for (let t = 0; t < tags.length; t++) {
+    if (!dedupe[tags[t]]) {
+      map[tags[t]] = map[tags[t]] || []
+      map[tags[t]].push(i)
+      dedupe[tags[t]] = true
+    }
+  }
+  return map
+}
 
-const doTagBy = (prop) => (map, item, i) => ({
-  ...map,
-  ...item[prop].reduce((tmap, tag) => ({
-    ...tmap,
-    [tag]: [...(map[tag] || []), i]
-  }), {})
-})
+const doTagBy = (prop) => (map, item, i) => {
+  let dedupe = {}
+  const tags = item[prop]
+  for (let t = 0; t < tags.length; t++) {
+    if (!dedupe[tags[t]]) {
+      map[tags[t]] = map[tags[t]] || []
+      map[tags[t]].push(i)
+      dedupe[tags[t]] = true
+    }
+  }
+  return map
+}
 
 // ------------------------------------------------------------- | AMG
 // Indexify

@@ -1,6 +1,14 @@
 // ------------------------------------------------------------- | AMG
 // Key By
 // ------------------------------------------------------------- |
+/*
+  When the 'key' type is used, the list is converted into an object
+  with key value pairs where the key is `item[prop]` or `prop(item)`
+  and the value is the index of `item` in the list. `prop` value of
+  each item is expected to be a simple data type (string, number, boolean)
+  and should be unique to each object in the list. Otherwise, only the
+  last item in the list with that `prop` value will be indexed.
+*/
 export const keyBy = (list, prop) => {
   return list.reduce((
     (typeof prop === 'function')
@@ -21,6 +29,13 @@ const innerKeyBy = (map, key, i) => {
 // ------------------------------------------------------------- | AMG
 // Group By
 // ------------------------------------------------------------- |
+/*
+  When the 'group' type is used, the list is converted into an object
+  with key value pairs where the key is `item[prop]` or `prop(item)` and
+  the value is an array of indexes for each `item` in the list with that
+  `prop` value. `prop` value of each item is expected to be a simple data
+  type (string, number, boolean).
+*/
 export const groupBy = (list, prop) => {
   return list.reduce((
     (typeof prop === 'function')
@@ -40,8 +55,16 @@ const innerGroupBy = (map, key, i) => {
 }
 
 // ------------------------------------------------------------- | AMG
-// Tags By
+// Tag By
 // ------------------------------------------------------------- |
+/*
+  When the 'tag' type is used, the list is converted into an object
+  with key value pairs where the key is a value in an array found at
+  `item[prop]` or `prop(item)` and the value is an array of indexes
+  for each `item` in the list with that value in its `prop` value.
+  `prop` value of each item is expected to be an array of simple data
+  types (string, number, boolean).
+*/
 export const tagBy = (list, prop) => {
   return list.reduce((
     (typeof prop === 'function')

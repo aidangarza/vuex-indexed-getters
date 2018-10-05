@@ -1,33 +1,34 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-unit-mocha" target="_blank" rel="noopener">unit-mocha</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <h3>Select Account</h3>
+    <select v-model="accountId">
+      <option value="">None</option>
+      <option value="r17WseDHA22DW">r17WseDHA22DW</option>
+    </select>
+    <h3>Select Item</h3>
+    <select v-model="trackedItemId">
+      <option :value="null">None</option>
+      <option v-for="{name, id} in items" :value="id" :key="id">{{ name }}</option>
+    </select>
+    <div v-if="item">
+      <h3>Item</h3>
+      <p>{{ item }}</p>
+    </div>
+    <div v-if="item">
+      <h3>Other Items in this group</h3>
+      <ul>
+        <li v-for="{ id, name } in itemGroup" :key="id">{{ name }}</li>
+      </ul>
+    </div>
+    <div v-if="item">
+      <h3>Other Items with these digits</h3>
+      <div v-for="(digit, i) in itemDigits" :key="i">
+        <h4>{{ digit }}</h4>
+        <ul>
+          <li v-for="{ id, name } in $store.getters.byDigit(digit)" :key="id">{{ name }}</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -36,6 +37,50 @@ export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  data () {
+    return {
+      itemId: null
+    }
+  },
+  computed: {
+    trackedItemId: {
+      get () {
+        return this.itemId
+      },
+      set (itemId) {
+        console.log(`<<< Changing item id to ${itemId} >>>`)
+        this.itemId = itemId
+      }
+    },
+    items () {
+      return this.$store.getters.current()
+    },
+    accountId: {
+      get () {
+        return this.$store.state.accountId
+      },
+      set (accountId) {
+        this.$store.commit('SET_ACCOUNT_ID', accountId)
+      }
+    },
+    item () {
+      return this.itemId
+        ? this.$store.getters['byId'](this.itemId)
+        : null
+    },
+    itemDigits () {
+      return this.item
+        ? this.item.id.toString().split('').reduce((list, item) => {
+          return list.includes(item) ? list : [...list, item]
+        }, [])
+        : []
+    },
+    itemGroup () {
+      return this.item
+        ? this.$store.getters['byGroup'](this.item.group)
+        : []
+    }
   }
 }
 </script>

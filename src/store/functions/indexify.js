@@ -9,13 +9,12 @@ export const keyBy = (list, prop) => {
   ), {})
 }
 
-const doKeyBy = (prop) => (map, item, i) => {
-  map[item[prop]] = i
-  return map
-}
+const doKeyBy = (prop) => (map, item, i) => innerKeyBy(map, item[prop], i)
 
-const doDynamicKeyBy = (prop) => (map, item, i) => {
-  map[prop(item)] = i
+const doDynamicKeyBy = (prop) => (map, item, i) => innerKeyBy(map, prop(item), i)
+
+const innerKeyBy = (map, key, i) => {
+  map[key] = i
   return map
 }
 
@@ -30,14 +29,11 @@ export const groupBy = (list, prop) => {
   ), {})
 }
 
-const doGroupBy = (prop) => (map, item, i) => {
-  map[item[prop]] = map[item[prop]] || []
-  map[item[prop]].push(i)
-  return map
-}
+const doGroupBy = (prop) => (map, item, i) => innerGroupBy(map, item[prop], i)
 
-const doDynamicGroupBy = (prop) => (map, item, i) => {
-  const key = prop(item)
+const doDynamicGroupBy = (prop) => (map, item, i) => innerGroupBy(map, prop(item), i)
+
+const innerGroupBy = (map, key, i) => {
   map[key] = map[key] || []
   map[key].push(i)
   return map
@@ -54,22 +50,12 @@ export const tagBy = (list, prop) => {
   ), {})
 }
 
-const doDynamicTagBy = (prop) => (map, item, i) => {
-  let dedupe = {}
-  const tags = prop(item)
-  for (let t = 0; t < tags.length; t++) {
-    if (!dedupe[tags[t]]) {
-      map[tags[t]] = map[tags[t]] || []
-      map[tags[t]].push(i)
-      dedupe[tags[t]] = true
-    }
-  }
-  return map
-}
+const doTagBy = (prop) => (map, item, i) => innerTagBy(map, item[prop], i)
 
-const doTagBy = (prop) => (map, item, i) => {
+const doDynamicTagBy = (prop) => (map, item, i) => innerTagBy(map, prop(item), i)
+
+const innerTagBy = (map, tags = [], i) => {
   let dedupe = {}
-  const tags = item[prop]
   for (let t = 0; t < tags.length; t++) {
     if (!dedupe[tags[t]]) {
       map[tags[t]] = map[tags[t]] || []

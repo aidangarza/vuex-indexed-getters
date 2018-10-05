@@ -4,6 +4,8 @@ import Vuex from 'vuex'
 import doIndexify from './functions/indexify'
 import doExpandify from './functions/expandify'
 
+// Wrapped the real `indexify` function to track
+// compute time
 const indexify = (type, list, prop) => {
   const t0 = performance.now()
   const output = doIndexify(type, list, prop)
@@ -11,7 +13,8 @@ const indexify = (type, list, prop) => {
   console.log(`indexify - ${type}: time = ${t1 - t0}`)
   return output
 }
-
+// Wrapped the real `expandify` function to track
+// compute time
 const expandify = (type, prop, map, list) => {
   const t0 = performance.now()
   const output = doExpandify(type, prop, map, list)
